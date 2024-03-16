@@ -80,6 +80,8 @@
                     author id:   <input id="createpost3"><br>
                     content:     <input id="createpost1"><br>
                     image:       <input id="createpost2"><br>
+                    authorPfp:     <input id="createpost4"><br>
+                    authorDisplayName:       <input id="createpost5"><br>
                     <!-- date:        <input id="createpost4"><br> -->
                     <!-- likes:       <input id="createpost5"><br> -->
                     <button onclick="createPost()">create post</button><br>
@@ -189,7 +191,7 @@
          // TOKENS
     let TOKEN = '';
     async function createToken() {
-        const token = await fetch('http://localhost:3000/api/tokens', {
+        const token = await fetch('http://localhost:8080/api/tokens', {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -203,7 +205,7 @@
     }
 
     async function isLoggedIn() {
-        const token = await fetch('http://localhost:3000/api/tokens/'+ document.getElementById('checklogin1').value, {
+        const token = await fetch('http://localhost:8080/api/tokens/'+ document.getElementById('checklogin1').value, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -236,7 +238,7 @@
 
         // USERS //
         async function createUser() {
-            const user = await fetch('http://localhost:3000/api/users', {
+            const user = await fetch('http://localhost:8080/api/users', {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -252,7 +254,7 @@
         }
 
         async function getUsers() {
-            const users = await fetch('http://localhost:3000/api/users', {
+            const users = await fetch('http://localhost:8080/api/users', {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -264,7 +266,7 @@
         }
 
         async function getUserByID() {
-            const users = await fetch('http://localhost:3000/api/users/' + document.getElementById('getuser0').value, {
+            const users = await fetch('http://localhost:8080/api/users/' + document.getElementById('getuser0').value, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -276,7 +278,7 @@
         }
 
         async function editUser() {
-            const users = await fetch('http://localhost:3000/api/users/' + document.getElementById('edituser0').value, {
+            const users = await fetch('http://localhost:8080/api/users/' + document.getElementById('edituser0').value, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
@@ -292,7 +294,7 @@
         }
 
         async function deleteUser() {
-            const users = await fetch('http://localhost:3000/api/users/' + document.getElementById('deleteuser1').value, {
+            const users = await fetch('http://localhost:8080/api/users/' + document.getElementById('deleteuser1').value, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",
@@ -303,23 +305,24 @@
 
         // POSTS //
         async function createPost() {
-            const post = await fetch('http://localhost:3000/api/users/'+ document.getElementById('createpost3').value +'/posts', {
+            const post = await fetch('http://localhost:8080/api/users/'+ document.getElementById('createpost3').value +'/posts', {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     'authorization': 'bearer ' + TOKEN
-
                 },
                 body: JSON.stringify({
                     content: document.getElementById('createpost1').value,
                     image: document.getElementById('createpost2').value,
-                    date: new Date()
+                    date: new Date(),
+                    authorPfp: document.getElementById('createpost4').value,
+                    authorDisplayName: document.getElementById('createpost5').value,
                 })
             }).then(data => data.json())
         }
 
         async function getAllPosts() {
-            const posts = await fetch('http://localhost:3000/api/posts', {
+            const posts = await fetch('http://localhost:8080/api/posts', {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -332,7 +335,7 @@
         }
 
         async function getUserPosts() {
-            const users = await fetch('http://localhost:3000/api/users/' + document.getElementById('getposts1').value +'/posts' , {
+            const users = await fetch('http://localhost:8080/api/users/' + document.getElementById('getposts1').value +'/posts' , {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -345,7 +348,7 @@
         }accept1
 
         async function editPost() {
-            const posts = await fetch('http://localhost:3000/api/users/' + document.getElementById('editpost3').value + '/posts/' + document.getElementById('editpost0').value, {
+            const post = await fetch('http://localhost:8080/api/users/' + document.getElementById('editpost3').value + '/posts/' + document.getElementById('editpost0').value, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
@@ -356,11 +359,10 @@
                     image: document.getElementById('editpost2').value,
                 })
             }).then(data => data.json());
-            // console.log(posts)
         }
 
         async function deletePost() {
-            const posts = await fetch('http://localhost:3000/api/users/' + document.getElementById('deletepost3').value + '/posts/' + document.getElementById('deletepost0').value, {
+            const posts = await fetch('http://localhost:8080/api/users/' + document.getElementById('deletepost3').value + '/posts/' + document.getElementById('deletepost0').value, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",
@@ -372,7 +374,7 @@
 
         // FRIENDS //
         async function getFriends() {
-            const friends = await fetch('http://localhost:3000/api/users/' + document.getElementById('getfriends1').value + '/friends', {
+            const friends = await fetch('http://localhost:8080/api/users/' + document.getElementById('getfriends1').value + '/friends', {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -384,7 +386,7 @@
         }
 
         async function sendFriendRequest() {
-            const users = await fetch('http://localhost:3000/api/users/' + document.getElementById('send1').value + '/friends',
+            const users = await fetch('http://localhost:8080/api/users/' + document.getElementById('send1').value + '/friends',
             {
                 method: "POST",
                 headers: {
@@ -397,7 +399,7 @@
         }
 
         async function acceptFriendRequest() {
-            const users = await fetch('http://localhost:3000/api/users/' + document.getElementById('accept1').value + '/friends/' + document.getElementById('accept2').value, {
+            const users = await fetch('http://localhost:8080/api/users/' + document.getElementById('accept1').value + '/friends/' + document.getElementById('accept2').value, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
@@ -407,7 +409,7 @@
         }
 
         async function deleteFriendRequest() {
-            const users = await fetch('http://localhost:3000/api/users/' + document.getElementById('delete1').value + '/friends/' + document.getElementById('delete2').value, {
+            const users = await fetch('http://localhost:8080/api/users/' + document.getElementById('delete1').value + '/friends/' + document.getElementById('delete2').value, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",
@@ -418,8 +420,8 @@
 
 
         async function createCommentt() {
-            // http://localhost:3000/api/posts/:id POST
-            const comment = await fetch('http://localhost:3000/api/posts/'+ document.getElementById('createcomment1').value, {
+            // http://localhost:8080/api/posts/:id POST
+            const comment = await fetch('http://localhost:8080/api/posts/'+ document.getElementById('createcomment1').value, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -434,8 +436,8 @@
         }
 
         async function getComments() {
-            // http://localhost:3000/api/posts/:id GET
-            const comments = await fetch('http://localhost:3000/api/posts/'+ document.getElementById('getcomments1').value, {
+            // http://localhost:8080/api/posts/:id GET
+            const comments = await fetch('http://localhost:8080/api/posts/'+ document.getElementById('getcomments1').value, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -447,8 +449,8 @@
         }
 
         async function editComment() {
-            // const comment = await fetch('http://localhost:3000/api/posts/'+ document.getElementById('editcomment1').value, {
-            const posts = await fetch('http://localhost:3000/api/users/'+ document.getElementById('editcomment1').value + '/comments/' + document.getElementById('editcomment2').value, {
+            // const comment = await fetch('http://localhost:8080/api/posts/'+ document.getElementById('editcomment1').value, {
+            const posts = await fetch('http://localhost:8080/api/users/'+ document.getElementById('editcomment1').value + '/comments/' + document.getElementById('editcomment2').value, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
@@ -461,8 +463,8 @@
         }
 
         async function deleteComment() {
-            // const posts = await fetch('http://localhost:3000/api/posts/'+ document.getElementById('deletecomment1').value, {
-            const posts = await fetch('http://localhost:3000/api/users/'+ document.getElementById('deletecomment1').value + '/comments/' + document.getElementById('deletecomment2').value, {
+            // const posts = await fetch('http://localhost:8080/api/posts/'+ document.getElementById('deletecomment1').value, {
+            const posts = await fetch('http://localhost:8080/api/users/'+ document.getElementById('deletecomment1').value + '/comments/' + document.getElementById('deletecomment2').value, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",

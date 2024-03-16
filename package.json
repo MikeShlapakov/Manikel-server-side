@@ -4,8 +4,10 @@
   "description": "Our implementation of the server for the Facebook-like social network",
   "main": "index.js",
   "scripts": {
-    "start": "SET NODE_ENV=local && node server.js",
-    "test": "SET NODE_ENV=test && node server.js"
+    "start": "cross-env NODE_ENV=local node server.js",
+    "populate": "cross-env NODE_ENV=local node scripts/populate.js",
+    "reset": "cross-env NODE_ENV=local node scripts/reset.js",
+    "test": "cross-env NODE_ENV=test node server.js"
   },
   "keywords": [],
   "author": "",
@@ -14,9 +16,13 @@
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "custom-env": "^2.0.2",
+    "dotenv": "^16.4.5",
     "express": "^4.18.3",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.4.0",
     "mongoose": "^8.2.1"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3"
   }
 }

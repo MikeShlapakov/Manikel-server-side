@@ -10,10 +10,16 @@ const isLoggedIn = async (req, res, next) => {
     if (status == 200) return next();
 }
 
+const loginSucceeded = async (req, res) => {
+    // console.log("hiii")    
+    return res.status(200).json({ data: "Verifyed token" })
+}
+
 const createToken = async (req, res) => {
+    console.log("creating token")
     return res.status(200).json(await tokensService.createToken(req.body.id))
 }
 
 module.exports = {
-    createToken, isLoggedIn
+    createToken, isLoggedIn, loginSucceeded
 }

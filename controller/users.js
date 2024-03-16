@@ -1,13 +1,18 @@
 const userService = require('../services/users');
-const tokensController = require('./tokens');
 
 const createUser = async (req, res) => {
-    res.json(await userService.createUser(
+    // get at most 7 friend requests as soon as a user is created
+    const existingUserIds = (await userService.getUsers(7)).map(user => user._id);
+
+    const user = await userService.createUser(
         req.body.displayName,
         req.body.username,
         req.body.password,
-        req.body.pfp
-    ))
+        req.body.pfp,
+        existingUserIds
+    );
+
+    res.json(user);
 }
 
 const getUsers = async (_, res) => {

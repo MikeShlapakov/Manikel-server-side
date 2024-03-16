@@ -10,11 +10,19 @@ const Post = new Schema({
     },
     image: {
         type: String,
-        required: true
+        required: false
     },
     authorId: {
         type: Schema.Types.ObjectId,
         ref: "User"
+    },
+    authorPfp: {
+        type: String,
+        required: true
+    },
+    authorDisplayName: {
+        type: String,
+        required: true
     },
     date: {
         type: Date,
@@ -23,6 +31,10 @@ const Post = new Schema({
     likes: {
         type: Number,
         default: 0
-    }
+    },
+    comments: [{
+        type: String,
+        ref: "Comment"
+    }],
 }, {versionKey: false});
 module.exports = mongoose.model('Post', Post, "posts");

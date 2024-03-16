@@ -1,39 +1,45 @@
 const express = require('express');
 var router = express.Router();
+const { errorWrapper } = require('./helper');
 const userController = require('../controller/users');
 const postController = require('../controller/posts');
 const commentController = require('../controller/comments');
 const tokensController = require('../controller/tokens');
 
-
 router.route('/')
-    .get(userController.getUsers)
-    .post(userController.createUser)
+    .get(errorWrapper(userController.getUsers))
+    .post(errorWrapper(userController.createUser))
+
+// router.route('/:username')
+//     .get(errorWrapper(userController.getUserByUsername))
 
 router.route('/:id')
-    .get(userController.getUser)
-    .patch(userController.editUser)
-    .delete(userController.deleteUser)
+    .get(errorWrapper(userController.getUser))
+    .patch(errorWrapper(userController.editUser))
+    .delete(errorWrapper(userController.deleteUser))
 
 router.route('/:id/posts')
-    .get(tokensController.isLoggedIn, postController.getUserPosts)
-    .post(tokensController.isLoggedIn, postController.createPost)
-
+    .get(tokensController.isLoggedIn, errorWrapper(postController.getUserPosts))
+    .post(tokensController.isLoggedIn, errorWrapper(postController.createPost))
+    
 router.route('/:id/posts/:pid')
-    .patch(tokensController.isLoggedIn, postController.editPost)
-    .delete(tokensController.isLoggedIn, postController.deletePost)
+    .patch(tokensController.isLoggedIn, errorWrapper(postController.editPost))
+    .delete(tokensController.isLoggedIn, errorWrapper(postController.deletePost))
+    
+router.route('/:id/posts/:pid/likes')
+    .patch(tokensController.isLoggedIn, errorWrapper(postController.editPostLikes))
 
 router.route('/:id/comments/:cid')
-    .patch(commentController.editComment)
-    .delete(commentController.deleteComment)
+    .patch(tokensController.isLoggedIn, errorWrapper(commentController.editComment))
+    .delete(tokensController.isLoggedIn, errorWrapper(commentController.deleteComment))
 
 router.route('/:id/friends')
-    .get(userController.getFriends)
-    .post(userController.sendFriendRequest)
+    .get(tokensController.isLoggedIn, errorWrapper(userController.getFriends))
+    .post(tokensController.isLoggedIn, errorWrapper(userController.sendFriendRequest))
 
 router.route('/:id/friends/:fid')
-    .patch(userController.acceptFriendRequest)
-    .delete(userController.deleteFriendRequest)
+    .patch(tokensController.isLoggedIn, errorWrapper(userController.acceptFriendRequest))
+    .delete(tokensController.isLoggedIn, errorWrapper(userController.deleteFriendRequest))
 
 module.exports = router;
 

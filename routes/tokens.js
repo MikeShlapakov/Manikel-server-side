@@ -1,12 +1,12 @@
 const express = require('express');
 var router = express.Router();
 const tokensController = require('../controller/tokens');
-// localhost/user/api/post
+const { errorWrapper } = require('./helper');
 
 router.route('/')
-    .post(tokensController.createToken)
+    .post(errorWrapper(tokensController.createToken))
 
 router.route('/:id')
-    .get(tokensController.isLoggedIn)
+    .get(tokensController.isLoggedIn, errorWrapper(tokensController.loginSucceeded))
 
 module.exports = router;

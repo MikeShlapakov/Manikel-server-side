@@ -2,14 +2,24 @@ const express = require('express');
 var router = express.Router();
 const postController = require('../controller/posts');
 const commentController = require('../controller/comments');
-// localhost/user/api/post
+const tokensController = require('../controller/tokens');
+const { errorWrapper } = require('./helper');
 
-router.route('/')
-    .get(postController.getAllPosts)
+router.route('/feed/:id')
+    .get(tokensController.isLoggedIn, errorWrapper(postController.getFeedPosts))
 
 router.route('/:id')
-    .post(commentController.createComment)
-    .get(commentController.getComments)
+    .post(tokensController.isLoggedIn, errorWrapper(commentController.createComment))
+    .get(tokensController.isLoggedIn, errorWrapper(commentController.getComments))
+
+router.route('/:id/friend-posts')
+    .get(tokensController.isLoggedIn, errorWrapper(postController.getAllFriendPosts))
+
+router.route('/:id/stranger-posts')
+    .get(tokensController.isLoggedIn, errorWrapper(postController.getStrangerPosts))
+
+router.route('/:id/friend-posts/:fid')
+    .get(tokensController.isLoggedIn, errorWrapper(postController.getFriendPosts))
 
 module.exports = router;
 

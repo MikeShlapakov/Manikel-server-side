@@ -1,7 +1,6 @@
 const Comment = require("../models/comments");
 
 const createComment = async (postId, authorId, content, date) => {
-    
     const comment = new Comment({
         postId: postId,
         authorId: authorId,
