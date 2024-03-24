@@ -4,6 +4,7 @@
 android app: [link](https://github.com/MikeShlapakov/Manikel-android-app/tree/Part3) <br>
 web app: [link](https://github.com/MikeShlapakov/Manikel-web-app/tree/Part3) <br>
 
+<br>
 nodejs server used to keep track of users, posts. and to handle user queries, commands.
 makes main use of mongoose, express, body-parser and jsonwebtoken. <br><br>
 
@@ -11,11 +12,13 @@ makes main use of mongoose, express, body-parser and jsonwebtoken. <br><br>
 - holds an index.html site to try out the server's api (lacks a little of maintenance)
 - handles errors correctly, server never falls flat (```services/helper.js```)
 - makes use of tokens to validate queries
-- holds 2 scripts to make testing easy peasy, reset drops the db, populate creates users and posts for each
+- holds 2 scripts to make testing easy peasy, <br>
+  ``npm run reset`` drops the db, <br>
+  `npm run populate` creates users and posts for each
 - for even easier testing, when creating a new user you get 7 friend requests from random ppl
 <br>
 
-the amount of posts given can be easily changed:
+the amount of posts shown on screen can be easily changed:
 ```
 const getFeedPosts = async (req, res) => {
 
@@ -39,7 +42,7 @@ const getFeedPosts = async (req, res) => {
 <br>
 
 
-if on MACOS, change the package.json to look like this
+if on ``MACOS``, change the package.json to look like this
 ```
 {
   "name": "manikel-server-side",
@@ -72,7 +75,7 @@ if on MACOS, change the package.json to look like this
 ```
 <br>
 
-if on WINDOWS
+if on ``WINDOWS``
 ```
 {
   "name": "manikel-server-side",
