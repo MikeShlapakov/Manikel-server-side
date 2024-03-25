@@ -12,6 +12,7 @@ makes main use of mongoose, express, body-parser and jsonwebtoken. <br><br>
 - holds an index.html site to try out the server's api (lacks a little of maintenance)
 - handles errors correctly, server never falls flat (```services/helper.js```)
 - makes use of tokens to validate queries
+- processes images up to 5MB
 - holds 2 scripts to make testing easy peasy, <br>
   ``npm run reset`` drops the db, <br>
   `npm run populate` creates users and posts for each
