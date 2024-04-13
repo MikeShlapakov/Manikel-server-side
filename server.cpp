@@ -1,84 +1,69 @@
 #include <iostream>
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#include <stdio.h>
 #include <string.h>
 
+using namespace std;
+
 int main() {
-    // Initialize Winsock
     WSADATA wsaData;
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
-        std::cerr << "Error initializing Winsock" << std::endl;
+        perror("Error initializing Windows Sockets");
         return 1;
     }
 
-    // Create a socket
-    SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
+    const char* ip_address = "127.0.0.1";
+    const int port_no = 5555;
+
+    SOCKET sock = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, 0);
     if (sock == INVALID_SOCKET) {
-        std::cerr << "Error creating socket" << std::endl;
+        perror("Error creating socket");
         WSACleanup();
         return 1;
     }
 
-    // Bind the socket to a specific address and port
+    // memset(&sin, 0, sizeof(sin));
     sockaddr_in serverAddr;
     serverAddr.sin_family = AF_INET;
-    serverAddr.sin_port = htons(5555);
-    serverAddr.sin_addr.s_addr = INADDR_ANY;
+    serverAddr.sin_port = htons(port_no);  // Replace with the server's port number
+    serverAddr.sin_addr.s_addr = inet_addr(ip_address);  // Replace with the server's IP address
 
-    if (bind(sock, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR) {
-        std::cerr << "Error binding socket" << std::endl;
+    if (connect(sock, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR) {
+        perror("Error connecting to server");
         closesocket(sock);
         WSACleanup();
         return 1;
     }
 
-    // Listen for incoming connections
-    if (listen(sock, 5) == SOCKET_ERROR) {
-        std::cerr << "Error listening on socket" << std::endl;
-        closesocket(sock);
-        WSACleanup();
-        return 1;
-    }
-
-    std::cout << "Server listening on port 5555..." << std::endl;
-
-    // Accept incoming connections
-    sockaddr_in clientAddr;
-    int addrLen = sizeof(clientAddr);
-    SOCKET clientSock = accept(sock, (struct sockaddr*)&clientAddr, &addrLen);
-    if (clientSock == INVALID_SOCKET) {
-        std::cerr << "Error accepting connection" << std::endl;
-        closesocket(sock);
-        WSACleanup();
-        return 1;
-    }
-
-    // Receive and echo back the client's messages
-    char buffer[4096];
+    std::string msg;
     while (true) {
-        int recvBytes = recv(clientSock, buffer, sizeof(buffer), 0);
+        std::cout << "Message to send: ";
+        std::getline(std::cin, msg);
+
+        if (msg == "quit") {
+            break;
+        }
+
+        // std::cout << msg.c_str() << " " << msg.length();
+        // Send the message
+        if (send(sock, msg.c_str(), msg.length(), 0) == SOCKET_ERROR) {
+            std::cout << "Error sending message" << std::endl;
+            break;
+        }
+
+        // Receive the server's response
+        char buffer[4096];
+        int recvBytes = recv(sock, buffer, sizeof(buffer), 0);
         if (recvBytes == SOCKET_ERROR) {
             std::cerr << "Error receiving message" << std::endl;
             break;
         }
-        else if (recvBytes == 0) {
-            std::cout << "Client disconnected" << std::endl;
-            break;
-        }
 
-        std::cout << "Received message: " << buffer << std::endl;
-
-        // Echo the message back to the client
-        if (send(clientSock, buffer, recvBytes, 0) == SOCKET_ERROR) {
-            std::cerr << "Error sending message" << std::endl;
-            break;
-        }
+        // std::cout << "Server sent: " << buffer << std::endl;
     }
 
-    // Clean up
-    closesocket(clientSock);
     closesocket(sock);
     WSACleanup();
-
     return 0;
 }
