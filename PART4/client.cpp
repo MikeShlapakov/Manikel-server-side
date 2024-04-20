@@ -54,13 +54,16 @@ int main() {
 
         // Receive the server's response
         char buffer[4096];
+        // Fill the array with null characters
+        memset(buffer, '\0', sizeof(buffer));
+        
         int recvBytes = recv(sock, buffer, sizeof(buffer), 0);
         if (recvBytes == SOCKET_ERROR) {
             std::cerr << "Error receiving message" << std::endl;
             break;
         }
 
-        // std::cout << "Server sent: " << buffer << std::endl;
+        std::cout << "Server sent: " << buffer << std::endl;
     }
 
     closesocket(sock);

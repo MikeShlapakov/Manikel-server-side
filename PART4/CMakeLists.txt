@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.14)
-project("Manikel")
+project(PART4)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -13,12 +13,12 @@ FetchContent_Declare(
 # set (gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-enable_testing()
+# enable_testing()
 
 set (SOURCE_MAIN
-		src/main.cpp # this is where the code we want to test
-		src/functions.cpp # this is the main for tests
-		src/functions.h # this is the main for tests
+		server.cpp # this is where the code we want to test
+		functions.cpp # this is the main for tests
+		functions.h # this is the main for tests
 	)
 
 # set (TEST_FILES
@@ -27,12 +27,16 @@ set (SOURCE_MAIN
 # 	)
 	
 set (SOURCE_FOR_TESTS
-		src/functions.cpp # this is the main for tests
-		src/functions.h # this is the main for tests
+		functions.cpp # this is the main for tests
+		functions.h # this is the main for tests
 	)
 
 
-add_executable(Main ${SOURCE_MAIN})
+add_executable(server ${SOURCE_MAIN})
+
+if(WIN32)
+    target_link_libraries(server PRIVATE wsock32 ws2_32)
+endif()
 # add_executable(InputTests ${TEST_FILES}  ${SOURCE_FOR_TESTS})
 
 # Link Google Test to the test executable

@@ -5,14 +5,29 @@
 #include <unistd.h>
 #include <string.h>
 #include <thread>
+#include <iostream>
+#include "functions.h"
 
 using namespace std;
 
 void handleClient(SOCKET clientSock) {
     // Receive and echo back the client's messages
-    char buffer[4096];
+    char in[4096];
+    std::string out;
+    // size in bits
+    bool gotFirstParams = false;
+    int bloomSize = 0;
+    std::hash<std::string> hash;
+    std::vector<bool> bloom; 
+    std::vector<int> hashTimes;
+
     while (true) {
-        int recvBytes = recv(clientSock, buffer, sizeof(buffer), 0);
+
+        // // first line, bloom size, hashes
+        // std::getline(std::cin, in);
+        memset(in, '\0', sizeof(in));
+
+        int recvBytes = recv(clientSock, in, sizeof(in), 0);
         if (recvBytes == SOCKET_ERROR) {
             std::cerr << "Error receiving message" << std::endl;
             break;
@@ -22,10 +37,42 @@ void handleClient(SOCKET clientSock) {
             break;
         }
 
-        std::cout << "Received message: " << buffer << std::endl;
+        std::cout << "Received message: " << in << std::endl;
 
+        // checks if the input corresponds the first line format
+        if (checkInputFormatFirstParams(in) && !gotFirstParams) {
+            getFirstParams(in, bloomSize, hashTimes);
+            // init bloom with bloomSize flases
+            bloom.insert(bloom.end(), bloomSize, false);
+            gotFirstParams = true;
+
+            out = "initialised bloomfilter"; 
+        }
+        
+        // checks if the input corresponds the url format
+        if (gotFirstParams && checkIs1URLOr2URL(in)) {
+            std::vector<std::string> input = splitString(in, ' ');
+            if (input[0] == "1") { 
+                // input[1] is our beloved URL
+                addToBloom(hash, input[1], hashTimes, bloom);
+                addToBlackList(input[1]);
+
+                out = "added URL to bloomfilter"; 
+
+            // must start with 2
+            } else {
+                
+                bool check = checkInBloom(hash, input[1], hashTimes, bloom);
+                out = (check ? "true" : "false"); 
+
+                if (check) { 
+                    out = out + " " + (checkIfInBlackList(input[1]) ? "true" : "false"); 
+                }
+                std::cout << out << std::endl;
+            }
+        }
         // Echo the message back to the client
-        if (send(clientSock, buffer, recvBytes, 0) == SOCKET_ERROR) {
+        if (send(clientSock, out.c_str(), out.length(), 0) == SOCKET_ERROR) {
             std::cerr << "Error sending message" << std::endl;
             break;
         }
@@ -73,8 +120,14 @@ int main(){
         return 1;
     }
 
-    cout << "Server listening on port" << server_port << endl;
+    cout << "Server listening on port " << server_port << endl;
 
+    // reset blacklist.txt
+    remove("blacklist.txt");
+    std::ofstream file("blacklist.txt", std::ios::app);
+    file.close();
+
+    cout << "initialised the blacklist" << endl;
 
     // Accept incoming connections and handle them in separate threads
     while (true) {
