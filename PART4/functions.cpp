@@ -35,12 +35,12 @@ bool checkIs1URLOr2URL (std::string in) { // TEST WRITTEN
 
    // split the string to its values
     std::vector<std::string> inputVals = splitString(in, ' ');
-    
     std::string firstIn = inputVals[0];
     // get first input
     char c = firstIn[0];
 
-    if (firstIn.size() > 1 || '1' > c || c > '2' || inputVals.size() > 2) {
+    // TODO: we only changed here, added inputVals.size() <= 1 condition
+    if (firstIn.size() > 1 || '1' > c || c > '2' || inputVals.size() > 2  || inputVals.size() <= 1) {
         return false;
     }
 
@@ -57,12 +57,27 @@ bool checkInputFormatFirstParams (std::string str) { // TEST WRITTEN
             return false;
         }
     }
-
+    try {
     // split the string to its values
     std::vector<std::string> inputVals = splitString(str, ' ');
 
+    // for (std::string val: inputVals) {  
+    //     for (char c : val) 
+    //     {
+    //         if (c != ' ' && (c > '9' || c < '0')) {
+    //             return false;
+    //         }
+    //     }
+    // }
+    
+    // TODO: changed this
+    if (inputVals.size() <= 1) {
+        return false;
+    }
+
     // checks if the digits are valid (not bigger then the max_size)
-    for (std::string val: inputVals) {  
+    for (std::string val: inputVals) { 
+        // std::cout << val << std::endl; 
         // works for very large nums, checks str as long long.
         if (std::stoull(val) > MAXBLOOMSIZE){
             return false;
@@ -70,6 +85,10 @@ bool checkInputFormatFirstParams (std::string str) { // TEST WRITTEN
     }
     
     return true;
+
+    } catch (std::exception& e) {
+        return false;
+    }
 }
 
 

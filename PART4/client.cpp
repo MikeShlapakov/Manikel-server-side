@@ -1,43 +1,37 @@
 #include <iostream>
-#include <winsock2.h>
-#include <ws2tcpip.h>
+#include <sys/socket.h>
 #include <stdio.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <unistd.h>
 #include <string.h>
 
-using namespace std;
+#define PORT 5555
 
 int main() {
-    WSADATA wsaData;
-    if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
-        perror("Error initializing Windows Sockets");
-        return 1;
-    }
-
     const char* ip_address = "127.0.0.1";
-    const int port_no = 5555;
-
-    SOCKET sock = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, 0);
-    if (sock == INVALID_SOCKET) {
-        perror("Error creating socket");
-        WSACleanup();
-        return 1;
+    int sock = socket(AF_INET, SOCK_STREAM, 0);
+    if (sock < 0) {
+        perror("error creating socket");
+        return -1;
     }
 
-    // memset(&sin, 0, sizeof(sin));
-    sockaddr_in serverAddr;
-    serverAddr.sin_family = AF_INET;
-    serverAddr.sin_port = htons(port_no);  // Replace with the server's port number
-    serverAddr.sin_addr.s_addr = inet_addr(ip_address);  // Replace with the server's IP address
+    struct sockaddr_in sin;
+    memset(&sin, 0, sizeof(sin));
+    sin.sin_family = AF_INET;
+    sin.sin_addr.s_addr = inet_addr(ip_address);
+    sin.sin_port = htons(PORT);
 
-    if (connect(sock, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR) {
-        perror("Error connecting to server");
-        closesocket(sock);
-        WSACleanup();
-        return 1;
+    if (connect(sock, (struct sockaddr *)&sin, sizeof(sin)) < 0) {
+        perror("error connecting to server");
+        // do we need to close the socket here?
+        close(sock);
+        return -1;
     }
 
     std::string msg;
     while (true) {
+
         std::cout << "Message to send: ";
         std::getline(std::cin, msg);
 
@@ -47,7 +41,7 @@ int main() {
 
         // std::cout << msg.c_str() << " " << msg.length();
         // Send the message
-        if (send(sock, msg.c_str(), msg.length(), 0) == SOCKET_ERROR) {
+        if (send(sock, msg.c_str(), msg.length(), 0) < 0) {
             std::cout << "Error sending message" << std::endl;
             break;
         }
@@ -58,7 +52,7 @@ int main() {
         memset(buffer, '\0', sizeof(buffer));
         
         int recvBytes = recv(sock, buffer, sizeof(buffer), 0);
-        if (recvBytes == SOCKET_ERROR) {
+        if (recvBytes < 0) {
             std::cerr << "Error receiving message" << std::endl;
             break;
         }
@@ -66,7 +60,6 @@ int main() {
         std::cout << "Server sent: " << buffer << std::endl;
     }
 
-    closesocket(sock);
-    WSACleanup();
+    close(sock);
     return 0;
 }
