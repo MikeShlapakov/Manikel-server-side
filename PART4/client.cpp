@@ -56,6 +56,11 @@ int main() {
             std::cerr << "Error receiving message" << std::endl;
             break;
         }
+        else if (recvBytes == 0) {
+            std::cout << "Server disconnected" << std::endl;
+            break;
+        }
+
 
         std::cout << "Server sent: " << buffer << std::endl;
     }

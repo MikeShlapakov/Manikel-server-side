@@ -60,15 +60,6 @@ bool checkInputFormatFirstParams (std::string str) { // TEST WRITTEN
     try {
     // split the string to its values
     std::vector<std::string> inputVals = splitString(str, ' ');
-
-    // for (std::string val: inputVals) {  
-    //     for (char c : val) 
-    //     {
-    //         if (c != ' ' && (c > '9' || c < '0')) {
-    //             return false;
-    //         }
-    //     }
-    // }
     
     // TODO: changed this
     if (inputVals.size() <= 1) {
