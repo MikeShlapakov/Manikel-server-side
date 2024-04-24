@@ -125,3 +125,30 @@ if on ``WINDOWS``
 ![Image 1](proof/1.png)
 ![Image 2](proof/2.png)
 
+<br><br>
+
+## PART4
+
+<br>
+
+<pre>
+
+Manuel: Couldn't compile with CMakeLists, because of an error with pthread, <br> 
+I don't understand how to link the lib using CMakeLists. <br>
+  
+commands I used to compile both server and client files: <br>
+
+to compile server.cpp:  g++ -o server server.cpp functions.cpp -lpthread -std=c++11 <br>
+to compile client.cpp:  g++ -o client client.cpp <br>
+
+
+> just make sure you first run server and afterwards run the client <br>
+> likewise, first exit the client and afterwards the server or else the port will be left hanging
+<br>
+is the hanging port something that could be fixed?
+
+</pre>
+<br><br><br><br><br><br>
+
+
+
