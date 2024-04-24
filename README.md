@@ -133,22 +133,25 @@ if on ``WINDOWS``
 
 <pre>
 
-Manuel: Couldn't compile with CMakeLists, because of an error with pthread, <br> 
-I don't understand how to link the lib using CMakeLists. <br>
+Multithreading bloom filter server, with proper error handling <br>
+
+to compile with CMakeLists: <br>
+  1. cmake -B build -S .  <br>
+  2. cmake --build build
+  <br>
+  > The files will be created in a "build" folder <br>
+
+the first user to connect will initialize the bloom filter,
+client commands:
   
-commands I used to compile both server and client files: <br>
-
-to compile server.cpp:  g++ -o server server.cpp functions.cpp -lpthread -std=c++11 <br>
-to compile client.cpp:  g++ -o client client.cpp <br>
-
-
-> just make sure you first run server and afterwards run the client <br>
-> likewise, first exit the client and afterwards the server or else the port will be left hanging
-<br>
-is the hanging port something that could be fixed?
+    1. initialize bloom:       (bloom_filter_size)   (hash_times)   (hash_times) .... (hash_times)  
+    2. add to bloom:       1   (string_to_add)
+    3. check if in bloom:  2   (string_to_check) 
+  <br>
+  > returns "true true" if a given string is blacklisted
 
 </pre>
-<br><br><br><br><br><br>
+<br><br><br><br>
 
 
 
