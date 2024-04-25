@@ -7,20 +7,20 @@ const bloom = require('./scripts/bloom');
 
 (async () => {
     customEnv.env(process.env.NODE_ENV, './config');
-    
+
     const users = require('./routes/users');
     const posts = require('./routes/posts');
     const tokens = require('./routes/tokens');
     
     // await mongoose.connect(process.env.MONGO_URL);
-    mongoose.connect(process.env.MONGO_URL, {
+    await mongoose.connect(process.env.MONGO_URL, {
         useNewUrlParser: true,
         useUnifiedTopology: true
     });
     
     console.log(`Successfully connected to MongoDB at ${process.env.MONGO_URL}`);
 
-    bloom.initBloom();
+    await bloom.initBloom();
 
     const server = express();
     

@@ -14,6 +14,8 @@
 
 std::vector<std::string> splitString(const std::string& input, char delimiter);
 
+void stripRight(std::string& str);
+
 void getFirstParams (std::string in, int& size, std::vector<int>& hashTimes);
 
 bool checkIs1URLOr2URL (std::string in);

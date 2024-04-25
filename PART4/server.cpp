@@ -9,6 +9,7 @@
 #include <atomic>
 
 #define PORT 5555
+#define BUFFER_SIZE 4096
 
 bool isBloomInitialized = false;
 
@@ -23,7 +24,7 @@ std::mutex mutex;
 
 void* handleClient(void* arg) {
     // Receive and echo back the client's messages
-    char in[4096];
+    char input[BUFFER_SIZE];
     std::string out = "";
     bool gotFirstParams = false;
     int bloomSize = 0;
@@ -34,6 +35,7 @@ void* handleClient(void* arg) {
     while (true) {
 
         // Echo the message back to the client
+        // std::cout << out << std::endl;
         if (!firstLoop && (send(client_sock, out.c_str(), out.length(), 0) < 0)) {
             std::cerr << "Error sending message" << std::endl;
             break;
@@ -42,22 +44,21 @@ void* handleClient(void* arg) {
         firstLoop = false;
 
         // first line, bloom size, hashes
-        memset(in, '\0', sizeof(in));
+        memset(input, '\0', sizeof(input));
         out = "";
 
-        int recvBytes = recv(client_sock, in, sizeof(in), 0);
-        std::cout << in;
-        out = "ok";
-        send(client_sock, out.c_str(), out.length(), 0);
+        int recvBytes = recv(client_sock, input, sizeof(input), 0);
+        std::string in = std::string(input);
+        stripRight(in);
+        std::cout << "\"" << in << "\"" << std::endl;
 
         if (recvBytes < 0) {
-            std::cerr << "Error receiving message" << std::endl;
+            std::cout << "Error receiving message" << std::endl;
             break;
         } else if (recvBytes == 0) {
             std::cout << "Client disconnected" << std::endl;
             break;
         }
-
 
         // if bloom isnt initialized
         if (isHashInit.load() == false && checkInputFormatFirstParams(in)) {
@@ -80,7 +81,6 @@ void* handleClient(void* arg) {
             continue;
         }
 
-
         mutex.lock();
 
         // url format is correct, we already checked it
@@ -92,12 +92,11 @@ void* handleClient(void* arg) {
             addToBlackList(input[1]);
 
             out = "added URL to bloomfilter"; 
-
         // must start with 2
         } else {
             
             bool check = checkInBloom(hash, input[1], hashTimes, bloom);
-            out = (check ? "true" : "false"); 
+            out = (check ? "true" : "false");
 
             if (check) { 
                 out = out + " " + (checkIfInBlackList(input[1]) ? "true" : "false"); 

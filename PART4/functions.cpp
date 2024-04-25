@@ -1,4 +1,5 @@
 #include "functions.h"
+#include <algorithm>
 
 
 std::vector<std::string> splitString(const std::string& input, char delimiter=' ') {
@@ -15,12 +16,23 @@ std::vector<std::string> splitString(const std::string& input, char delimiter=' 
     return values;
 }
 
+// Function to strip string from the right
+void stripRight(std::string& str) {
+    // Find the first non-whitespace character from the right
+    auto it = std::find_if(str.rbegin(), str.rend(), [](unsigned char ch) {
+        return !std::isspace(ch);
+    });
+    
+    // Erase the characters from the found position to the end
+    str.erase(it.base(), str.end());
+}
+
 
 void getFirstParams (std::string in, int& size, std::vector<int>& hashTimes) {
 
     // split the string to its values
     std::vector<std::string> inputVals = splitString(in, ' ');
-    
+
     // set the size of the bloomfilter
     size = std::stoi(inputVals[0]);
 
@@ -54,30 +66,33 @@ bool checkInputFormatFirstParams (std::string str) { // TEST WRITTEN
     for (char c : str) 
     {
         if (c != ' ' && (c > '9' || c < '0')) {
+            
             return false;
         }
     }
     try {
-    // split the string to its values
-    std::vector<std::string> inputVals = splitString(str, ' ');
-    
-    // TODO: changed this
-    if (inputVals.size() <= 1) {
-        return false;
-    }
 
-    // checks if the digits are valid (not bigger then the max_size)
-    for (std::string val: inputVals) { 
-        // std::cout << val << std::endl; 
-        // works for very large nums, checks str as long long.
-        if (std::stoull(val) > MAXBLOOMSIZE){
+        // split the string to its values
+        std::vector<std::string> inputVals = splitString(str, ' ');
+
+        // TODO: changed this
+        if (inputVals.size() <= 1) {
             return false;
         }
-    }
-    
-    return true;
+
+        // checks if the digits are valid (not bigger then the max_size)
+        for (std::string val: inputVals) {  
+            // works for very large nums, checks str as long long.
+            if (val == ""){continue;}
+            if (std::stoull(val) > MAXBLOOMSIZE){
+                return false;
+            }
+        }
+        
+        return true;
 
     } catch (std::exception& e) {
+        std::cerr << e.what() << std::endl;
         return false;
     }
 }
