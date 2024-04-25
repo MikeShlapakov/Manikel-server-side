@@ -5,6 +5,8 @@
 #include <unistd.h>
 #include "functions.h"
 #include <stdint.h>
+#include <mutex>
+#include <atomic>
 
 #define PORT 5555
 
@@ -44,6 +46,10 @@ void* handleClient(void* arg) {
         out = "";
 
         int recvBytes = recv(client_sock, in, sizeof(in), 0);
+        std::cout << in;
+        out = "ok";
+        send(client_sock, out.c_str(), out.length(), 0);
+
         if (recvBytes < 0) {
             std::cerr << "Error receiving message" << std::endl;
             break;
@@ -140,12 +146,15 @@ int main() {
     while (true) {
         struct sockaddr_in clientAddr;
         unsigned int addrLen = sizeof(clientAddr);
+        // std::cout << "new client connected" << std::endl;
         int clientSock = accept(sock, (struct sockaddr*)&clientAddr, &addrLen);
+        // std::cout << "1111" << std::endl;
         if (clientSock < 0) {
             std::cerr << "Error accepting connection" << std::endl;
             continue;
         }
 
+        std::cout << "new client connected" << std::endl;
         pthread_t thread;
         pthread_attr_t a;
         pthread_attr_init(&a);
