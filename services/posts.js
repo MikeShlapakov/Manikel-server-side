@@ -1,4 +1,5 @@
 const Post = require("../models/posts");
+const net = require('net');
 
 const createPost = async (content, image, authorId, date, authorPfp, authorDisplayName, likes = 0, comments =[]) => {
     const post = new Post({
@@ -11,6 +12,34 @@ const createPost = async (content, image, authorId, date, authorPfp, authorDispl
         likes,
         comments
     })
+    await post.save();
+    return post;
+}
+
+const checkForBadURL = async (content) => {
+
+
+    // client.on('close', () => {
+    //   console.log('Connection closed');
+    // });
+
+    // client.on('error', (error) => {
+    //   console.error('Error:', error);
+    // });
+
+    // Function to send message
+
+    if (!client.destroyed) {
+      client.write(message);
+    } else {
+      console.error('Client is disconnected');
+      return false
+    }
+
+    client.on('data', (data) => {
+      console.log('Received:', data.toString());
+    });
+
     await post.save();
     return post;
 }
