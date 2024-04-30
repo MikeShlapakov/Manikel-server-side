@@ -55,8 +55,7 @@ async function handleReceive(){
 }
 
 async function initBloom () {
-    await client.connect(process.env.TCP_PORT, process.env.TCP_ADDR);
-    console.log('Connected to server');
+    await client.connect(process.env.TCP_PORT, process.env.TCP_ADDR).on('error', () => {console.log("Blooom server not found running")} ).on('data', () => {console.log("Successfully connected to bloom server")} );
     
     await sendData(); // Make sure sendData is also async or returns a promise
     
@@ -68,6 +67,8 @@ async function initBloom () {
         console.error('Error:', error);
     });
 }
+
+async function logmessage (msg) {console.log(msg);}
 
 async function sendData() {
     // init the bloom filter
