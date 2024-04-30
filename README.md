@@ -1,6 +1,7 @@
 ## server
 <br>
 
+Link to our wiki : [wiki](https://github.com/suarezmanuel/Manikel/wiki)<br>
 android app: [link](https://github.com/MikeShlapakov/Manikel-android-app/tree/Part3) <br>
 web app: [link](https://github.com/MikeShlapakov/Manikel-web-app/tree/Part3) <br>
 
