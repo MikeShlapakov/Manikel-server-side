@@ -35,7 +35,7 @@ void* handleClient(void* arg) {
     while (true) {
 
         // Echo the message back to the client
-        // std::cout << out << std::endl;
+        std::cout << out << std::endl;
         if (!firstLoop && (send(client_sock, out.c_str(), out.length(), 0) < 0)) {
             std::cerr << "Error sending message" << std::endl;
             break;

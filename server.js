@@ -4,6 +4,9 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const customEnv = require('custom-env');
 const bloom = require('./scripts/bloom');
+const post = require('./services/posts');
+
+const text = 'Visit https://example.com or http://www.example.org. More links: https://example.net and http://example.io';
 
 (async () => {
     customEnv.env(process.env.NODE_ENV, './config');
