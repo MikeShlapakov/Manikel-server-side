@@ -17,13 +17,24 @@ function writeData(socket, data) {
     });
 }
 
+async function waitForResponse(socket) {
+    return new Promise((resolve, reject) => {
+        socket.once('data', (data) => {
+            resolve(data);
+        });
+        socket.once('error', (error) => {
+            reject(error);
+        });
+    });
+}
+
 async function handleWrite(input){
     if (!client.destroyed) {
         let newIn = input + ' '.repeat(process.env.BUFFER_SIZE - input.length); 
         // console.log(newIn, " length: ", newIn.length);
         try {
             await writeData(client, newIn);
-            console.log("Data sent successfully");
+            console.log("Data sent successfully ", newIn.trimEnd());
             return true;
         } catch (error) {
             console.error("Error sending data:", error);
@@ -36,10 +47,25 @@ async function handleWrite(input){
     }
 } 
 
+async function handleReceive(){
+    // Wait for response from server
+    let response = await waitForResponse(client);
+    console.log("Response from server:", response.toString('utf8'));
+    return response.toString('utf8')
+}
+
 async function initBloom () {
-    client.connect(process.env.TCP_PORT, process.env.TCP_ADDR, () => {
-        console.log('Connected to server');
-        sendData();
+    await client.connect(process.env.TCP_PORT, process.env.TCP_ADDR);
+    console.log('Connected to server');
+    
+    await sendData(); // Make sure sendData is also async or returns a promise
+    
+    client.on('close', () => {
+        console.log('Connection closed');
+    });
+    
+    client.on('error', (error) => {
+        console.error('Error:', error);
     });
 }
 
@@ -49,6 +75,8 @@ async function sendData() {
         console.log("Failed to initialize bloom filter");
         return -1;
     }
+
+    await handleReceive();
     
     // init the blacklist
     for (const url of process.env.BAD_URLS.split(" ")) {
@@ -56,7 +84,11 @@ async function sendData() {
             console.log("Failed to add url to blacklist:", url);
             return -1;
         }
+
+        await handleReceive();
     }
 }
 
 module.exports.initBloom = initBloom;
+module.exports.handleWrite = handleWrite;
+module.exports.handleReceive = handleReceive;

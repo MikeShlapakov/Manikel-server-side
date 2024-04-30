@@ -1,8 +1,14 @@
 const postService = require('../services/posts');
 const userService = require('../services/users');
+const bloom = require('../scripts/bloom');
 
 const createPost = async (req, res) => {
     console.log("authorPfp in controller is " + req.authorPfp)
+    
+    if (!await checkForBadURL(req.body.content)){
+        return res.status(403).json({ errors: ["Bad URL detected"] });
+    }
+
     res.json(await postService.createPost(
         req.body.content,
         req.body.image,
@@ -11,6 +17,33 @@ const createPost = async (req, res) => {
         req.body.authorPfp,
         req.body.authorDisplayName,
     ))
+}
+
+async function checkForBadURL (content) {
+    // return new Promise((resolve, reject) => {
+        // const text = 'Visit https://example.com or http://www.example.org. More links: https://example.net and http://example.io';
+
+    const urlPattern = /(?:https?:\/\/|www\.)(?:\S+(?::\S*)?@)?(?:(?!10(?:\.\d{1,3}){3})(?!127(?:\.\d{1,3}){3})(?!169\.254(?:\.\d{1,3}){2})(?!192\.168(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/[^\s]*)?/gi;
+
+    const matches = content.match(urlPattern);
+
+    console.log(matches);
+
+    for(let url of matches){
+        if (!await bloom.handleWrite("2 " + url)){
+            console.log("Failed to check in blacklist:", url);
+            return false;
+        }
+        let response = await bloom.handleReceive();
+        // let res = responce.split(" ");
+        console.log("response", response)
+        if (response == "true true"){
+            return false;
+        }
+        
+    }
+    return true;
+    // });
 }
 
 const getUserPosts = async (req, res) => {
