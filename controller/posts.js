@@ -99,6 +99,11 @@ const getStrangerPosts = async (req, res) => {
 }
 
 const editPost = async (req, res) => {
+
+    if (!await checkForBadURL(req.body.content)){
+        return res.status(403).json({ errors: ["Bad URL detected"] });
+    }
+    
     const post = await postService.editPost(
         req.params.pid, 
         req.body.content,
