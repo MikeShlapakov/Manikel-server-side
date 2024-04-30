@@ -4,9 +4,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const customEnv = require('custom-env');
 const bloom = require('./scripts/bloom');
-const post = require('./services/posts');
 
-const text = 'Visit https://example.com or http://www.example.org. More links: https://example.net and http://example.io';
 
 (async () => {
     customEnv.env(process.env.NODE_ENV, './config');
@@ -15,7 +13,6 @@ const text = 'Visit https://example.com or http://www.example.org. More links: h
     const posts = require('./routes/posts');
     const tokens = require('./routes/tokens');
     
-    // await mongoose.connect(process.env.MONGO_URL);
     await mongoose.connect(process.env.MONGO_URL, {
         useNewUrlParser: true,
         useUnifiedTopology: true
