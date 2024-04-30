@@ -29,21 +29,22 @@ async function checkForBadURL (content) {
 
     console.log(matches);
 
-    for(let url of matches){
-        if (!await bloom.handleWrite("2 " + url)){
-            console.log("Failed to check in blacklist:", url);
-            return false;
+    if (matches != null) {
+        for(let url of matches){
+            if (!await bloom.handleWrite("2 " + url)){
+                console.log("Failed to check in blacklist:", url);
+                return false;
+            }
+            let response = await bloom.handleReceive();
+            // let res = responce.split(" ");
+            console.log("response", response)
+            if (response == "true true"){
+                return false;
+            }
+            
         }
-        let response = await bloom.handleReceive();
-        // let res = responce.split(" ");
-        console.log("response", response)
-        if (response == "true true"){
-            return false;
-        }
-        
-    }
-    return true;
-    // });
+        return true;
+    } else { return true; }
 }
 
 const getUserPosts = async (req, res) => {
@@ -100,6 +101,7 @@ const getStrangerPosts = async (req, res) => {
 
 const editPost = async (req, res) => {
 
+    console.log("content: " + req.body.content);
     if (!await checkForBadURL(req.body.content)){
         return res.status(403).json({ errors: ["Bad URL detected"] });
     }

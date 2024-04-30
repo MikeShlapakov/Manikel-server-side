@@ -30,7 +30,7 @@ async function waitForResponse(socket) {
 
 async function handleWrite(input){
     if (!client.destroyed) {
-        let newIn = input + ' '.repeat(process.env.BUFFER_SIZE - input.length); 
+        let newIn = input + ' '.repeat(process.env.BUFFER_SIZE - input.length-1); 
         // console.log(newIn, " length: ", newIn.length);
         try {
             await writeData(client, newIn);
